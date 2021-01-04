@@ -1181,3 +1181,5 @@ export const PRError = styled.div`
 		// height: 10px;
 	}
 `;
+
+export const PRPreamble = styled.div``;
