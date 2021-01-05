@@ -1364,15 +1364,12 @@ export class ScmManager {
 
 		const remoteBranch = await git.getBranchRemote(repo.path, request.branchName);
 		if (!remoteBranch) {
-			throw new Error(`fetchRemoteBranch: Couldn't find branchRemote for ${repo.path} and ${request.branchName}`);
+			throw new Error(
+				`fetchRemoteBranch: Couldn't find branchRemote for ${repo.path} and ${request.branchName}`
+			);
 		}
 
-		const { error } = await git.fetchRemoteBranch(
-			repo.path,
-			".",
-			remoteBranch,
-			request.branchName
-		);
+		const { error } = await git.fetchRemoteBranch(repo.path, ".", remoteBranch, request.branchName);
 		if (error) {
 			throw new Error(error);
 		}
@@ -1399,7 +1396,11 @@ export class ScmManager {
 		await git.fetchAllRemotes(repoPath);
 
 		const baseBranchRemote = await git.getBranchRemote(repoPath, request.branchName);
-		const commitsBehindOrigin = await git.getBranchCommitsStatus(repoPath, baseBranchRemote!, request.branchName);
+		const commitsBehindOrigin = await git.getBranchCommitsStatus(
+			repoPath,
+			baseBranchRemote!,
+			request.branchName
+		);
 
 		return {
 			commitsBehindOrigin
@@ -1480,6 +1481,22 @@ export class ScmManager {
 				}
 			};
 		}
+		if (!request.baseSha)
+			return {
+				sha: "",
+				error: {
+					message: "baseSha is required",
+					type: "REPO_NOT_FOUND"
+				}
+			};
+		if (!request.headSha)
+			return {
+				sha: "",
+				error: {
+					message: "headSha is required",
+					type: "REPO_NOT_FOUND"
+				}
+			};
 		try {
 			const shas = [request.baseSha, request.headSha];
 			const results = await Promise.all(
